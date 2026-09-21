@@ -1,4 +1,4 @@
-NÚMERO SECRETO
+## NÚMERO SECRETO
 
 Jogo de adivinhação feito com HTML, CSS e JavaScript puros, sem frameworks nem dependências. O computador sorteia um número entre 1 e 100 e você tenta descobrir qual é, recebendo a dica "alto demais" ou "baixo demais" a cada palpite.
 
