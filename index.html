@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light dark">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&display=swap" rel="stylesheet">
+    <style>
+        /* ---------- Tokens ---------- */
+        :root {
+            --bg: #e8ecf4;
+            --card: #fafbfd;
+            --ink: #16213a;
+            --muted: #55617d;
+            --line: #c9d1e3;
+            --accent: #3a56f0;
+            --accent-soft: #e3e8ff;
+            --win: #0b6b45;
+            --win-soft: #d9f2e5;
+            --font: "Bricolage Grotesque", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+            color-scheme: light;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #0e1526;
+                --card: #161f36;
+                --ink: #e9edf7;
+                --muted: #9ba7c6;
+                --line: #2b3958;
+                --accent: #93a6ff;
+                --accent-soft: #232f57;
+                --win: #7fe0b0;
+                --win-soft: #123a2b;
+                color-scheme: dark;
+            }
+        }
+
+        /* ---------- Base ---------- */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            min-height: 100dvh;
+            display: grid;
+            place-items: center;
+            padding: 1rem;
+            background: var(--bg);
+            color: var(--ink);
+            font-family: var(--font);
+            line-height: 1.4;
+        }
+
+        /* ---------- Cartão do jogo ---------- */
+        .container {
+            width: 100%;
+            max-width: 30rem;
+            padding: clamp(1.25rem, 5vw, 2.25rem);
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 1.25rem;
+        }
+
+        /* ---------- Título e dica ---------- */
+        .titulo {
+            text-align: center;
+        }
+
+        .titulo h1 {
+            margin: 0;
+            font-size: clamp(1.75rem, 7vw, 2.5rem);
+            font-weight: 800;
+            line-height: 1.05;
+            letter-spacing: -0.02em;
+            text-wrap: balance;
+        }
+
+        /* "Entre 1 e 100" entre duas réguas de traços */
+        .info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin: 0.9rem 0 0;
+            color: var(--muted);
+            font-size: 0.95rem;
+            white-space: nowrap;
+        }
+
+        .info::before,
+        .info::after {
+            content: "";
+            flex: 1;
+            height: 12px;
+            background:
+                linear-gradient(90deg, var(--line) 1px, transparent 1px) 0 100% / 6px 6px repeat-x,
+                linear-gradient(90deg, var(--muted) 1px, transparent 1px) 0 100% / 30px 12px repeat-x;
+        }
+
+        /* Reserva o espaço da dica para o layout não pular quando ela aparece */
+        .titulo h3 {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 2.75rem;
+            margin: 1.25rem 0 0;
+            padding: 0.5rem 1rem;
+            border-radius: 0.875rem;
+            font-size: 1rem;
+            font-weight: 700;
+            line-height: 1.25;
+            overflow-wrap: anywhere;
+        }
+
+        .titulo h3:not(:empty) {
+            background: var(--accent-soft);
+            color: var(--accent);
+        }
+
+        /* Vitória: o campo fica somente leitura, então a dica muda para verde */
+        .container:has(#numChutado[readonly]) .titulo h3:not(:empty) {
+            background: var(--win-soft);
+            color: var(--win);
+        }
+
+        /* ---------- Campo do palpite ---------- */
+        .inputBox {
+            width: 100%;
+            max-width: 16rem;
+            margin: 1.5rem auto 0;
+        }
+
+        .inputBox2 {
+            display: block;
+            width: 100%;
+            padding: 0.3em 0.2em;
+            font: inherit;
+            font-size: clamp(2.25rem, 12vw, 3.5rem);
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+            text-align: center;
+            color: var(--ink);
+            caret-color: var(--accent);
+            background: var(--card);
+            border: 2px solid var(--line);
+            border-radius: 1rem;
+            outline: none;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+
+        .inputBox2:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px var(--accent-soft);
+        }
+
+        .inputBox2[readonly] {
+            color: var(--win);
+            background: var(--win-soft);
+            border-color: var(--win);
+            box-shadow: none;
+        }
+
+        .ajuda {
+            margin: 0.6rem 0 0;
+            text-align: center;
+            color: var(--muted);
+            font-size: 0.875rem;
+        }
+
+        /* ---------- Registros ---------- */
+        .registros {
+            margin-top: 1.75rem;
+        }
+
+        .registro {
+            margin: 0;
+            padding: 0.85rem 0;
+            border-top: 1px solid var(--line);
+        }
+
+        .registro-linha {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .rotulo {
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        .valor {
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+        }
+
+        #contador {
+            font-size: 1.5rem;
+            line-height: 1;
+        }
+
+        /* Valores iniciais apenas visuais, enquanto os campos ainda estão vazios */
+        #contador:empty::before {
+            content: "0";
+        }
+
+        #numerosChutados {
+            display: block;
+            margin-top: 0.35rem;
+            font-size: 1.125rem;
+            overflow-wrap: anywhere;
+        }
+
+        #numerosChutados:empty::before {
+            content: "–";
+            color: var(--muted);
+        }
+
+        /* ---------- Botão ---------- */
+        .botao {
+            margin-top: 0.5rem;
+        }
+
+        .botao button {
+            width: 100%;
+            min-height: 3rem;
+            padding: 0.75rem 1rem;
+            font: inherit;
+            font-weight: 600;
+            color: var(--ink);
+            background: transparent;
+            border: 2px solid var(--ink);
+            border-radius: 0.875rem;
+            cursor: pointer;
+            transition: background-color 0.15s, color 0.15s;
+        }
+
+        .botao button:hover {
+            background: var(--ink);
+            color: var(--card);
+        }
+
+        .botao button:focus-visible {
+            outline: 3px solid var(--accent);
+            outline-offset: 3px;
+        }
+
+        /* ---------- Telas muito pequenas ---------- */
+        @media (max-width: 360px) {
+            body {
+                padding: 0.5rem;
+            }
+
+            .container {
+                border-radius: 1rem;
+            }
+
+            .info {
+                font-size: 0.85rem;
+                gap: 0.5rem;
+            }
+        }
+
+        /* ---------- Movimento reduzido ---------- */
+        @media (prefers-reduced-motion: reduce) {
+            .inputBox2,
+            .botao button {
+                transition: none;
+            }
+        }
+    </style>
+    <title>Adivinhe o número</title>
+</head>
+<body onload="iniciar()">
+    <div class="container">
+        <div class="titulo">
+            <h1>Adivinhe o número</h1>
+            <p class="info">Entre 1 e 100</p>
+            <h3 id="dica" aria-live="polite"></h3>
+        </div>
+
+        <div class="inputBox">
+            <input type="text" class="inputBox2" id="numChutado" onchange="compararNumeros()" aria-label="Seu palpite">
+            <p class="ajuda">Digite um número e pressione Enter.</p>
+        </div>
+        <div class="registros">
+            <p class="registro registro-linha">
+                <span class="rotulo">Tentativas</span>
+                <span class="valor" id="contador"></span>
+            </p>
+            <p class="registro">
+                <span class="rotulo">Números chutados</span>
+                <span class="valor" id="numerosChutados"></span>
+            </p>
+        </div>
+        <div class="botao">
+            <button type="button" onclick="reiniciarJogo()">Reiniciar jogo</button>
+        </div>
+    </div>
+    <script>
+        let numeroAleatorio
+        let numerosChutados = []
+        let contador = 0
+
+        function reiniciarJogo(){
+            document.getElementById('numChutado').value = ''
+            window.location.reload()
+        }
+
+        function iniciar() {
+            numeroAleatorio = Number(Math.floor(Math.random() * 100 + 1))
+            console.log(numeroAleatorio)
+            document.getElementById('numChutado').innerHTML = ''
+        }
+
+        function compararNumeros(){
+            const valorDigitado = document.getElementById('numChutado').value.trim()
+
+            if(!/^-?\d+$/.test(valorDigitado)){
+                document.getElementById('dica').innerHTML = 'DIGITE APENAS NÚMEROS INTEIROS'
+                document.getElementById('numChutado').value = ''
+                return
+            }
+
+            const numChutado = Number(valorDigitado)
+            numerosChutados.push(' ' + numChutado)
+            document.getElementById('numerosChutados').innerHTML = numerosChutados
+
+            if(numChutado > numeroAleatorio){
+                document.getElementById('dica').innerHTML = 'ALTO demais'
+                document.getElementById('numChutado').value = ''
+                contador++
+                document.getElementById('contador').innerHTML = contador
+            }
+            else if(numChutado < numeroAleatorio){
+                document.getElementById('dica').innerHTML = 'BAIXO demais'
+                document.getElementById('numChutado').value = ''
+                contador++
+                document.getElementById('contador').innerHTML = contador
+            }
+            else{
+                document.getElementById('dica').innerHTML = 'PARABÉNS! O NÚMERO SECRETO ERA ' + numeroAleatorio
+                contador++
+                document.getElementById('contador').innerHTML = contador
+                document.getElementById('numChutado').setAttribute('Readonly', 'Readonly')
+            }
+        }
+    </script>
+</body>
+</html>
